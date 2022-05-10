@@ -1,0 +1,11 @@
+Emojis=openmoji
+
+Font=BQN386 Unicode
+FontHeight=11
+BoldAsFont=yes
+
+Columns=140
+Rows=40
+Transparency=off
+CursorType=block
+Scrollbar=none
