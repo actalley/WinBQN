@@ -1,6 +1,6 @@
-# BQNWin32
+# WinBQN
 
-BQNWin32 is a work in progress attempt at providing an easy to install and configure distribution of [CBQN](https://github.com/dzaima/CBQN) for Windows.
+WinBQN is a work in progress attempt at providing an easy to install and configure distribution of [CBQN](https://github.com/dzaima/CBQN) for Windows.
 
 | Download                                 | Description     |
 | -----------------------------------------|-----------------|
