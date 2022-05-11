@@ -1,5 +1,5 @@
 
-Task default -depends Packages
+Task default -depends Dist
 
 Task Dist {
 
