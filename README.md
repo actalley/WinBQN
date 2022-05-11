@@ -15,6 +15,7 @@ WinBQN is a work in progress attempt at providing an easy to install and configu
 - [ ] Stable builds
 - [ ] Environment and configuration with sane defaults
 - [ ] Installer(s)
+- [ ] Tests
 - [ ] CI/CD
 
 ## Maybe Someday
