@@ -12,6 +12,8 @@ WinBQN is a work in progress attempt at providing an easy to install and configu
 ## Short(ish) Term Goals
 - [x] Basic standalone xcopy-distribution
 - [x] Mintty and rlwrap with input configuration
+- [ ] [Double-struck letter](https://mlochbaum.github.io/BQN/#how-do-i-work-with-the-character-set) input when using BQN.exe with [bqn-vscode](https://github.com/razetime/bqn-vscode) or Vim terminal (mintty) 
+- [ ] BQN character input when using BQN.exe with gVim terminal
 - [ ] Stable builds
 - [ ] Environment and configuration with sane defaults
 - [ ] Installer(s)
