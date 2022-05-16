@@ -38,6 +38,7 @@ properties {
         "$cygwinRoot\bin\cygwin-console-helper.exe"         = "$packageCBQNMinttyPath\bin\cygwin-console-helper.exe"
         "$cygwinRoot\bin\mintty.exe"                        = "$packageCBQNMinttyPath\bin\mintty.exe"
         "$cygwinRoot\usr\share\terminfo\78\xterm"           = "$packageCBQNMinttyPath\usr\share\terminfo\78\xterm"
+        "$cygwinRoot\usr\share\terminfo\78\xterm-256color"  = "$packageCBQNMinttyPath\usr\share\terminfo\78\xterm-256color"
         "$CBQNPath\BQN.exe"                                 = "$packageCBQNMinttyPath\bin\BQN.exe"
         "$RlwrapPath\src\rlwrap.exe"                        = "$packageCBQNMinttyPath\bin\rlwrap.exe"
         "$BQNPath\editors\inputrc"                          = "$packageCBQNMinttyPath\.bqn.inputrc"
