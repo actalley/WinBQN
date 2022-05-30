@@ -10,7 +10,7 @@ properties {
     $cygwinRoot = 'C:\Cygwin'
     $cygwinBash = "$cygwinRoot\bin\bash.exe"
     $cygwinDownloads = "$($env:USERPROFILE)\cygwin-package-downloads"
-    $cygwinPackages = 'automake,clang,libncurses-devel,libreadline-devel,make,git'
+    $cygwinPackages = 'automake,clang,libncurses-devel,libreadline-devel,libffi-devel,make,git'
     $cygwinSetupArguments =
         '--no-admin',
         '--site',
@@ -28,11 +28,11 @@ properties {
         '--packages',
         $cygwinPackages
 
-    $msys2SetupName = 'msys2-x86_64-20220319.exe'
+    $msys2SetupName = 'msys2-x86_64-20220503.exe'
     $msys2Setup = ".\$msys2SetupName"
     $msys2SetupArguments = 'install --root C:\MSYS2 --confirm-command'
-    $msys2SetupUrl = "https://github.com/msys2/msys2-installer/releases/download/2022-03-19/$msys2SetupName"
-    $msys2Sha256 = 'bd7cac636c1bf3a1821b9694ba3f49a92a6de1458d0ccc78f36338a393892e71'
+    $msys2SetupUrl = "https://github.com/msys2/msys2-installer/releases/download/2022-05-03/$msys2SetupName"
+    $msys2Sha256 = '7076511052806bd48199790265fdad719f0877bbd75ad2d5305835d3f54d138b'
 
     $gitSetupName = 'Git-2.36.0-64-bit.exe'
     $gitSetup = ".\$gitSetupName"
@@ -80,7 +80,7 @@ Task InstallMsys2 `
 
     Assert ( Test-Path -Path 'C:\MSYS2\usr\bin\bash.exe' ) "`"C:\MSYS2\usr\bin\bash.exe`" does not exist!"
 
-    & 'C:\MSYS2\usr\bin\bash.exe' --login -c "pacman -Sy --noconfirm git make clang automake ncurses-devel libreadline-devel autotools"
+    & 'C:\MSYS2\usr\bin\bash.exe' --login -c "pacman -Sy --noconfirm git make clang automake ncurses-devel libreadline-devel libffi-devel autotools"
 }
 
 Task InstallGit `

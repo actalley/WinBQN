@@ -18,6 +18,7 @@ properties {
     $packageCBQNZipPath = "..\..\dist\$packageCBQNName.zip"
     $packageCBQNFilesToCopy = @{
         "$msys2Root\usr\bin\msys-2.0.dll"                       = "$packageCBQNPath\msys-2.0.dll"
+        "$msys2Root\usr\bin\msys-ffi-8.dll"                     = "$packageCBQNPath\msys-ffi-8.dll"
         "$msys2Root\usr\share\doc\Msys\CYGWIN_LICENSE"          = "$packageCBQNPath\CYGWIN_LICENSE"
         "$CBQNPath\BQN.exe"                                     = "$packageCBQNPath\BQN.exe"
         "$CBQNPath\LICENSE"                                     = "$packageCBQNPath\CBQN_LICENSE"
@@ -35,6 +36,7 @@ properties {
         "$msys2Root\usr\bin\msys-ncursesw6.dll"                 = "$packageCBQNMinttyPath\usr\bin\msys-ncursesw6.dll"
         "$msys2Root\usr\bin\msys-readline8.dll"                 = "$packageCBQNMinttyPath\usr\bin\msys-readline8.dll"
         "$msys2Root\usr\bin\msys-2.0.dll"                       = "$packageCBQNMinttyPath\usr\bin\msys-2.0.dll"
+        "$msys2Root\usr\bin\msys-ffi-8.dll"                     = "$packageCBQNMinttyPath\usr\bin\msys-ffi-8.dll"
         "$msys2Root\usr\bin\cygwin-console-helper.exe"          = "$packageCBQNMinttyPath\usr\bin\cygwin-console-helper.exe"
         "$msys2Root\usr\bin\mintty.exe"                         = "$packageCBQNMinttyPath\usr\bin\mintty.exe"
         "$msys2Root\usr\share\terminfo\78\xterm"                = "$packageCBQNMinttyPath\usr\share\terminfo\78\xterm"
@@ -128,7 +130,7 @@ Task BuildCBQN `
     Push-Location -Path $CBQNPath
 
     $env:CHERE_INVOKING = 1
-    & $msys2Bash --login -c "make PIE=''"
+    & $msys2Bash --login -c "make f=-mcmodel=medium PIE=''"
 
     Pop-Location
 
