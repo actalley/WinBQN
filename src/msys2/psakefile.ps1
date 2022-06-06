@@ -21,6 +21,7 @@ properties {
         "$msys2Root\usr\bin\msys-ffi-8.dll"                     = "$packageCBQNPath\msys-ffi-8.dll"
         "$msys2Root\usr\share\doc\Msys\CYGWIN_LICENSE"          = "$packageCBQNPath\CYGWIN_LICENSE"
         "$CBQNPath\BQN.exe"                                     = "$packageCBQNPath\BQN.exe"
+        "$CBQNPath\cbqn.dll"                                    = "$packageCBQNPath\cbqn.dll"
         "$CBQNPath\LICENSE"                                     = "$packageCBQNPath\CBQN_LICENSE"
     }
 
@@ -31,7 +32,8 @@ properties {
         "$packageCBQNMinttyPath\usr\bin",
         "$packageCBQNMinttyPath\etc",
         "$packageCBQNMinttyPath\licenses",
-        "$packageCBQNMinttyPath\usr\share\terminfo\78" 
+        "$packageCBQNMinttyPath\usr\share\terminfo\78",
+        "$packageCBQNMinttyPath\include"
     $packageCBQNMinttyFilesToCopy = @{
         "$msys2Root\usr\bin\msys-ncursesw6.dll"                 = "$packageCBQNMinttyPath\usr\bin\msys-ncursesw6.dll"
         "$msys2Root\usr\bin\msys-readline8.dll"                 = "$packageCBQNMinttyPath\usr\bin\msys-readline8.dll"
@@ -42,6 +44,8 @@ properties {
         "$msys2Root\usr\share\terminfo\78\xterm"                = "$packageCBQNMinttyPath\usr\share\terminfo\78\xterm"
         "$msys2Root\usr\share\terminfo\78\xterm-256color"       = "$packageCBQNMinttyPath\usr\share\terminfo\78\xterm-256color"
         "$CBQNPath\BQN.exe"                                     = "$packageCBQNMinttyPath\usr\bin\BQN.exe"
+        "$CBQNPath\cbqn.dll"                                    = "$packageCBQNMinttyPath\usr\bin\cbqn.dll"
+        "$CBQNPath\include\bqnffi.h"                            = "$packageCBQNMinttyPath\include\bqnffi.h"
         "$RlwrapPath\src\rlwrap.exe"                            = "$packageCBQNMinttyPath\usr\bin\rlwrap.exe"
         "$BQNPath\editors\inputrc"                              = "$packageCBQNMinttyPath\.bqn.inputrc"
         "$msys2Root\usr\share\doc\Msys\CYGWIN_LICENSE"          = "$packageCBQNMinttyPath\licenses\CYGWIN_LICENSE"
@@ -58,7 +62,8 @@ properties {
         $packageCBQNZipPath,
         $packageCBQNMinttyPath,
         $packageCBQNMinttyZipPath,
-        "$CBQNPath\BQN.exe"
+        "$CBQNPath\BQN.exe",
+        "$CBQNPath\cbqn.dll"
 }
 
 Task default -depends All
@@ -130,7 +135,7 @@ Task BuildCBQN `
     Push-Location -Path $CBQNPath
 
     $env:CHERE_INVOKING = 1
-    & $msys2Bash --login -c "make f=-mcmodel=medium PIE=''"
+    & $msys2Bash --login -c "make f=-mcmodel=medium PIE=''; make shared-o3 no_fPIC=1 OUTPUT='cbqn.dll'"
 
     Pop-Location
 

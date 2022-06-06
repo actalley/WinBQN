@@ -21,6 +21,7 @@ properties {
         "$cygwinRoot\bin\cygffi-6.dll"                      = "$packageCBQNPath\cygffi-6.dll"
         "$cygwinRoot\usr\share\doc\Cygwin\CYGWIN_LICENSE"   = "$packageCBQNPath\CYGWIN_LICENSE"
         "$CBQNPath\BQN.exe"                                 = "$packageCBQNPath\BQN.exe"
+        "$CBQNPath\cbqn.dll"                                = "$packageCBQNPath\cbqn.dll"
         "$CBQNPath\LICENSE"                                 = "$packageCBQNPath\CBQN_LICENSE"
     }
 
@@ -31,7 +32,8 @@ properties {
         "$packageCBQNMinttyPath\bin",
         "$packageCBQNMinttyPath\etc",
         "$packageCBQNMinttyPath\licenses",
-        "$packageCBQNMinttyPath\usr\share\terminfo\78" 
+        "$packageCBQNMinttyPath\usr\share\terminfo\78",
+        "$packageCBQNMinttyPath\include"
     $packageCBQNMinttyFilesToCopy = @{
         "$cygwinRoot\bin\cygncursesw-10.dll"                = "$packageCBQNMinttyPath\bin\cygncursesw-10.dll"
         "$cygwinRoot\bin\cygreadline7.dll"                  = "$packageCBQNMinttyPath\bin\cygreadline7.dll"
@@ -42,6 +44,8 @@ properties {
         "$cygwinRoot\usr\share\terminfo\78\xterm"           = "$packageCBQNMinttyPath\usr\share\terminfo\78\xterm"
         "$cygwinRoot\usr\share\terminfo\78\xterm-256color"  = "$packageCBQNMinttyPath\usr\share\terminfo\78\xterm-256color"
         "$CBQNPath\BQN.exe"                                 = "$packageCBQNMinttyPath\bin\BQN.exe"
+        "$CBQNPath\cbqn.dll"                                = "$packageCBQNMinttyPath\bin\cbqn.dll"
+        "$CBQNPath\include\bqnffi.h"                        = "$packageCBQNMinttyPath\include\bqnffi.h"
         "$RlwrapPath\src\rlwrap.exe"                        = "$packageCBQNMinttyPath\bin\rlwrap.exe"
         "$BQNPath\editors\inputrc"                          = "$packageCBQNMinttyPath\.bqn.inputrc"
         "$cygwinRoot\usr\share\doc\Cygwin\CYGWIN_LICENSE"   = "$packageCBQNMinttyPath\licenses\CYGWIN_LICENSE"
@@ -58,7 +62,8 @@ properties {
         $packageCBQNZipPath,
         $packageCBQNMinttyPath,
         $packageCBQNMinttyZipPath,
-        "$CBQNPath\BQN.exe"
+        "$CBQNPath\BQN.exe",
+        "$CBQNPath\cbqn.dll"
 }
 
 Task default -depends All
@@ -130,7 +135,7 @@ Task BuildCBQN `
     Push-Location -Path $CBQNPath
 
     $env:CHERE_INVOKING = 1
-    & $cygwinBash --login -c 'make OUTPUT="BQN.exe"'
+    & $cygwinBash --login -c 'make OUTPUT="BQN.exe"; make shared-o3 no_fPIC=1 OUTPUT="cbqn.dll"'
 
     Pop-Location
 
