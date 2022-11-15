@@ -139,7 +139,13 @@ Task BuildCBQN `
 
     Pop-Location
 
+    if ( Test-Path -Path "$CBQNPath\cbqn.dll.exe" ) {
+
+        Rename-Item -Path "$CBQNPath\cbqn.dll.exe" -NewName 'cbqn.dll' -Force
+    }
+
     Assert ( Test-Path -Path "$CBQNPath\BQN.exe" ) "`"$CBQNPath\BQN.exe`" does not exist!"
+    Assert ( Test-Path -Path "$CBQNPath\cbqn.dll" ) "`"$CBQNPath\cbqn.dll`" does not exist!"
 }
 
 Task BuildRlwrap `

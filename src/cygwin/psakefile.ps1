@@ -140,6 +140,7 @@ Task BuildCBQN `
     Pop-Location
 
     Assert ( Test-Path -Path "$CBQNPath\BQN.exe" ) "`"$CBQNPath\BQN.exe`" does not exist!"
+    Assert ( Test-Path -Path "$CBQNPath\cbqn.dll" ) "`"$CBQNPath\cbqn.dll`" does not exist!"
 }
 
 Task BuildRlwrap `
