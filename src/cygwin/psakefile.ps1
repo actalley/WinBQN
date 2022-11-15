@@ -18,7 +18,7 @@ properties {
     $packageCBQNZipPath = "..\..\dist\$packageCBQNName.zip"
     $packageCBQNFilesToCopy = @{
         "$cygwinRoot\bin\cygwin1.dll"                       = "$packageCBQNPath\cygwin1.dll"
-        "$cygwinRoot\bin\cygffi-6.dll"                      = "$packageCBQNPath\cygffi-6.dll"
+        "$cygwinRoot\bin\cygffi-8.dll"                      = "$packageCBQNPath\cygffi-8.dll"
         "$cygwinRoot\usr\share\doc\Cygwin\CYGWIN_LICENSE"   = "$packageCBQNPath\CYGWIN_LICENSE"
         "$CBQNPath\BQN.exe"                                 = "$packageCBQNPath\BQN.exe"
         "$CBQNPath\cbqn.dll"                                = "$packageCBQNPath\cbqn.dll"
@@ -38,7 +38,7 @@ properties {
         "$cygwinRoot\bin\cygncursesw-10.dll"                = "$packageCBQNMinttyPath\bin\cygncursesw-10.dll"
         "$cygwinRoot\bin\cygreadline7.dll"                  = "$packageCBQNMinttyPath\bin\cygreadline7.dll"
         "$cygwinRoot\bin\cygwin1.dll"                       = "$packageCBQNMinttyPath\bin\cygwin1.dll"
-        "$cygwinRoot\bin\cygffi-6.dll"                      = "$packageCBQNMinttyPath\bin\cygffi-6.dll"
+        "$cygwinRoot\bin\cygffi-8.dll"                      = "$packageCBQNMinttyPath\bin\cygffi-8.dll"
         "$cygwinRoot\bin\cygwin-console-helper.exe"         = "$packageCBQNMinttyPath\bin\cygwin-console-helper.exe"
         "$cygwinRoot\bin\mintty.exe"                        = "$packageCBQNMinttyPath\bin\mintty.exe"
         "$cygwinRoot\usr\share\terminfo\78\xterm"           = "$packageCBQNMinttyPath\usr\share\terminfo\78\xterm"
