@@ -28,11 +28,11 @@ properties {
         '--packages',
         $cygwinPackages
 
-    $msys2SetupName = 'msys2-x86_64-20220503.exe'
+    $msys2SetupName = 'msys2-x86_64-20221028.exe'
     $msys2Setup = ".\$msys2SetupName"
     $msys2SetupArguments = 'install --root C:\MSYS2 --confirm-command'
-    $msys2SetupUrl = "https://github.com/msys2/msys2-installer/releases/download/2022-05-03/$msys2SetupName"
-    $msys2Sha256 = '7076511052806bd48199790265fdad719f0877bbd75ad2d5305835d3f54d138b'
+    $msys2SetupUrl = "https://github.com/msys2/msys2-installer/releases/download/2022-10-28/$msys2SetupName"
+    $msys2Sha256 = '9ab223bee2610196ae8e9c9e0a2951a043cac962692e4118ad4d1e411506cd04'
 
     $gitSetupName = 'Git-2.36.0-64-bit.exe'
     $gitSetup = ".\$gitSetupName"
