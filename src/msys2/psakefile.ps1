@@ -135,7 +135,7 @@ Task BuildCBQN `
     Push-Location -Path $CBQNPath
 
     $env:CHERE_INVOKING = 1
-    & $msys2Bash --login -c "make f=-mcmodel=medium PIE=''; make shared-o3 no_fPIC=1 OUTPUT='cbqn.dll'"
+    & $msys2Bash --login -c "make f=-mcmodel=medium lf=-Wl,--stack,0x400000 PIE=''; make shared-o3 no_fPIC=1 OUTPUT='cbqn.dll' lf=-Wl,--stack,0x400000"
 
     Pop-Location
 

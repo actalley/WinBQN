@@ -13,19 +13,20 @@ properties {
     $BQNRepository = 'https://github.com/mlochbaum/BQN'
     $BQNPath = '..\common\BQN'
 
-    $packageCBQNName = 'cbqn-cygwin-standalone-x86_64'
+    $packageCBQNName = 'cbqn-cygwin-gcc-standalone-x86_64'
     $packageCBQNPath = "..\..\dist\$packageCBQNName"
     $packageCBQNZipPath = "..\..\dist\$packageCBQNName.zip"
     $packageCBQNFilesToCopy = @{
         "$cygwinRoot\bin\cygwin1.dll"                       = "$packageCBQNPath\cygwin1.dll"
         "$cygwinRoot\bin\cygffi-8.dll"                      = "$packageCBQNPath\cygffi-8.dll"
+        "$cygwinRoot\bin\cyggcc_s-seh-1.dll"                = "$packageCBQNPath\cyggcc_s-seh-1.dll"
         "$cygwinRoot\usr\share\doc\Cygwin\CYGWIN_LICENSE"   = "$packageCBQNPath\CYGWIN_LICENSE"
         "$CBQNPath\BQN.exe"                                 = "$packageCBQNPath\BQN.exe"
         "$CBQNPath\cbqn.dll"                                = "$packageCBQNPath\cbqn.dll"
         "$CBQNPath\LICENSE"                                 = "$packageCBQNPath\CBQN_LICENSE"
     }
 
-    $packageCBQNMinttyName = 'cbqn-cygwin-mintty-standalone-x86_64'
+    $packageCBQNMinttyName = 'cbqn-cygwin-gcc-mintty-standalone-x86_64'
     $packageCBQNMinttyPath = "..\..\dist\$packageCBQNMinttyName"
     $packageCBQNMinttyZipPath = "..\..\dist\$packageCBQNMinttyName.zip"
     $packageCBQNMinttyFolders =
@@ -39,6 +40,7 @@ properties {
         "$cygwinRoot\bin\cygreadline7.dll"                  = "$packageCBQNMinttyPath\bin\cygreadline7.dll"
         "$cygwinRoot\bin\cygwin1.dll"                       = "$packageCBQNMinttyPath\bin\cygwin1.dll"
         "$cygwinRoot\bin\cygffi-8.dll"                      = "$packageCBQNMinttyPath\bin\cygffi-8.dll"
+        "$cygwinRoot\bin\cyggcc_s-seh-1.dll"                = "$packageCBQNMinttyPath\bin\cyggcc_s-seh-1.dll"
         "$cygwinRoot\bin\cygwin-console-helper.exe"         = "$packageCBQNMinttyPath\bin\cygwin-console-helper.exe"
         "$cygwinRoot\bin\mintty.exe"                        = "$packageCBQNMinttyPath\bin\mintty.exe"
         "$cygwinRoot\usr\share\terminfo\78\xterm"           = "$packageCBQNMinttyPath\usr\share\terminfo\78\xterm"
@@ -135,9 +137,14 @@ Task BuildCBQN `
     Push-Location -Path $CBQNPath
 
     $env:CHERE_INVOKING = 1
-    & $cygwinBash --login -c 'make OUTPUT="BQN.exe"; make shared-o3 no_fPIC=1 OUTPUT="cbqn.dll"'
+    & $cygwinBash --login -c 'make CC="gcc" OUTPUT="BQN.exe" lf=-Wl,--stack,0x400000; make CC="gcc" shared-o3 no_fPIC=1 OUTPUT="cbqn.dll" lf=-Wl,--stack,0x400000'
 
     Pop-Location
+
+    if ( Test-Path -Path "$CBQNPath\cbqn.dll.exe" ) {
+
+        Rename-Item -Path "$CBQNPath\cbqn.dll.exe" -NewName 'cbqn.dll' -Force
+    }
 
     Assert ( Test-Path -Path "$CBQNPath\BQN.exe" ) "`"$CBQNPath\BQN.exe`" does not exist!"
     Assert ( Test-Path -Path "$CBQNPath\cbqn.dll" ) "`"$CBQNPath\cbqn.dll`" does not exist!"
