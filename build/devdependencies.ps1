@@ -2,32 +2,6 @@ $ProgressPreference = 'SilentlyContinue'
 
 properties {
 
-    $cygwinSetupName = 'setup-x86_64.exe'
-    $cygwinSha512Url = 'https://cygwin.com/sha512.sum'
-    $cygwinUrl = "https://cygwin.org/$cygwinSetupName"
-    $cygwinSetup = ".\$cygwinSetupName"
-    $cygwinMirror = 'https://mirrors.kernel.org/sourceware/cygwin'
-    $cygwinRoot = 'C:\Cygwin'
-    $cygwinBash = "$cygwinRoot\bin\bash.exe"
-    $cygwinDownloads = "$($env:USERPROFILE)\cygwin-package-downloads"
-    $cygwinPackages = 'automake,clang,libncurses-devel,libreadline-devel,libffi-devel,make,git'
-    $cygwinSetupArguments =
-        '--no-admin',
-        '--site',
-        $cygwinMirror,
-        '--root',
-        $cygwinRoot,
-        '--local-package-dir',
-        $cygwinDownloads,
-        '--no-shortcuts',
-        '--delete-orphans',
-        '--upgrade-also',
-        '--no-replaceonreboot',
-        '--quiet-mode',
-        '--force-current',
-        '--packages',
-        $cygwinPackages
-
     $msys2SetupName = 'msys2-x86_64-20221028.exe'
     $msys2Setup = ".\$msys2SetupName"
     $msys2SetupArguments = 'install --root C:\MSYS2 --confirm-command'
@@ -48,25 +22,9 @@ Task Usage {
     #TODO: warning
 }
 
-Task DevDependencies -depends InstallCygwin, InstallMsys2, InstallGit {
+Task DevDependencies -depends InstallMsys2, InstallGit {
 
 
-}
-
-Task InstallCygwin `
-    -depends GetCygwin `
-    -description 'Installs Cygwin with CBQN and rlwrap build dependencies' `
-    -requiredVariables cygwinSetup, cygwinSetupArguments, cygwinBash `
-    -precondition { -not ( Test-Path -Path $cygwinBash ) } `
-{
-
-    Start-Process -FilePath $cygwinSetup -ArgumentList $cygwinSetupArguments -Wait
-    # The Cygwin setup always has an exit code of 0, and /var/log/setup.log.full does not explicitly state if an install was successful.
-    # For now I'm making no attempt to detect failure. This will need to be sorted out for CI/CD later.
-
-    Assert ( Test-Path -Path $cygwinBash ) "`"$cygwinBash`" does not exist!"
-
-    & $cygwinBash --login -c "echo cygwin first run"
 }
 
 Task InstallMsys2 `
@@ -94,36 +52,6 @@ Task InstallGit `
     $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine")
 	
 	& 'git.exe' config --global core.autocrlf false
-}
-
-Task GetCygwin `
-    -description 'Downloads Cygwin installer' `
-    -requiredVariables cygwinSha512Url, cygwinSetupName, cygwinUrl, cygwinSetup `
-    -precondition { -not ( Test-Path -Path $cygwinSetup ) } `
-{
-    $shaContentBytes = Invoke-WebRequest -Uri $cygwinSha512Url -UseBasicParsing | Select-Object -ExpandProperty Content
-    $shaContent = [System.Text.Encoding]::UTF8.GetString($shaContentBytes)
-    
-    $shaList = $shaContent.Split("`n") | ForEach-Object {
-
-        if ( $_ -match "(?<sha512>[^ ]+)( )+(?<Filename>setup-x86(_64)?\.exe)" ) {
-
-            [PSCustomObject]@{
-                Filename = $Matches.Filename
-                sha512 = $Matches.sha512
-            }
-        }
-    }
-
-    $sha512Expected = $shaList | Where-Object { $_.Filename -eq $cygwinSetupName } | Select-Object -ExpandProperty sha512
-
-    Invoke-WebRequest -Uri $cygwinUrl -OutFile $cygwinSetup -UseBasicParsing
-
-    Assert ( Test-Path -Path $cygwinSetup ) "`"$cygwinSetup`" does not exist!"
-
-    $sha512Actual = Get-FileHash -Path $cygwinSetup -Algorithm SHA512 | Select-Object -ExpandProperty Hash
-
-    Assert ( $sha512Expected -eq $sha512Actual ) "`"$cygwinSetup`"'s hash `"$sha512Actual`" does not match expected `"$sha512Expected`"!"
 }
 
 Task GetMsys2 `
