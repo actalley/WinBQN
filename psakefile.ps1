@@ -2,24 +2,39 @@
 properties {
 
     $sandboxNested = $SANDBOX
+    $distSuccessPath = 'dist\success'
+}
+
+BuildSetup {
+
+    if ( Test-Path -Path $distSuccessPath ) { Remove-Item -Path $distSuccessPath -Force }
+
+    $gitEnv = [System.Environment]::GetEnvironmentVariable('Path', 'Machine') -split ';' | Where-Object{ $_ -match 'Git' }
+    if ( $sandboxNested -and $gitEnv -and -not $env:PATH.ToUpper().Contains('GIT') ) { $env:PATH += ";$gitEnv" }
 }
 
 Task default -depends Dist
 
 Task Dist `
-    -depends UpdateEnvironment, CheckClang, CheckGit `
+    -depends CheckClang, CheckGit `
     -description 'Builds a WinBQN distributon' `
 {
 
     throw "Not implemented!"
+
+    # if Dist is successful write dist\success file
+    New-Item -Path $distSuccessPath -ItemType File -Force | Out-Null
 }
 
 Task SandboxDist `
     -depends CheckSandbox `
     -description 'Builds a WinBQN distributon using Windows Sandbox' `
+    -requiredVariables distSuccessPath `
 {
 
     Invoke-psake .\build\sandbox.ps1 Sandbox
+
+    Assert ( Test-Path -Path $distSuccessPath ) "`"$distSuccessPath`" does not exist, Dist must have failed in the sandbox!"
 }
 
 Task CheckSandbox {
@@ -38,13 +53,6 @@ Task CheckClang {
 Task CheckGit {
 
     Assert ( [bool](Get-Command 'git.exe' -ErrorAction SilentlyContinue)  ) "Git must be in the Path!"
-}
-
-Task UpdateEnvironment -requiredVariables sandboxNested {
-
-    $gitEnv = [System.Environment]::GetEnvironmentVariable('Path', 'Machine') -split ';' | Where-Object{ $_ -match 'Git' }
-
-    if ( $sandboxNested -and $gitEnv -and -not $env:PATH.ToUpper().Contains('GIT') ) { $env:PATH += ";$gitEnv" }
 }
 
 Task Clean {

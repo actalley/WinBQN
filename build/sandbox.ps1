@@ -97,7 +97,10 @@ Task Build -depends DevDependencies {
 
     Push-Location -Path ..
 
-    &cmd.exe /c $setEnv -Command "Invoke-psake Dist -parameters @{ 'SANDBOX' = `$true }"
+    exec {
+
+        & cmd.exe /c $setEnv -Command "Invoke-psake Dist -parameters @{ 'SANDBOX' = `$true }; Exit !`$psake.build_success"
+    }
 
     Copy-Item -Path dist\ -Destination "C:\Users\WDAGUtilityAccount\Desktop\$projectFolderName\" -Force -Recurse
 
