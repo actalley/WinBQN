@@ -13,6 +13,8 @@ properties {
     
     $sandboxLogonCommand = "cmd.exe /c start powershell.exe -Command `"& 'powershell.exe' -NoExit -ExecutionPolicy RemoteSigned -File '$sandboxLogonScriptPath'`""
 
+    $setEnv = "$($env:USERPROFILE)\.winbqn\SetEnv.bat"
+
     $filesToClean =
         ".\$logonScriptName",
         ".\$wsbName"
@@ -93,9 +95,13 @@ Task Clean -requiredVariables filesToClean {
 
 Task Build -depends DevDependencies {
 
-    throw "Not implemented!"
+    Push-Location -Path ..
 
-    Copy-Item -Path ..\dist\ -Destination "C:\Users\WDAGUtilityAccount\Desktop\$projectFolderName\" -Force -Recurse
+    &cmd.exe /c $setEnv -Command "Invoke-psake Dist"
+
+    Copy-Item -Path dist\ -Destination "C:\Users\WDAGUtilityAccount\Desktop\$projectFolderName\" -Force -Recurse
+
+    Pop-Location
 }
 
 Task DevDependencies {
