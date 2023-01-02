@@ -93,7 +93,7 @@ Task Clean -requiredVariables filesToClean {
 
 Task Build -depends DevDependencies {
 
-    Invoke-psake ..\src\psakefile.ps1 Dist
+    throw "Not implemented!"
 
     Copy-Item -Path ..\dist\ -Destination "C:\Users\WDAGUtilityAccount\Desktop\$projectFolderName\" -Force -Recurse
 }

@@ -39,8 +39,3 @@ dist/
 
 build/logonscript.ps1
 build/config.wsb
-
-src/msys2/CBQN/
-src/msys2/rlwrap/
-
-src/common/BQN/

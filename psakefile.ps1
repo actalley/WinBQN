@@ -3,7 +3,7 @@ Task default -depends Dist
 
 Task Dist {
 
-    Invoke-psake .\src\psakefile.ps1 Dist
+    throw "Not implemented!"
 }
 
 Task SandboxDist {
@@ -15,5 +15,4 @@ Task Clean {
 
     Remove-Item -Path .\build\* -Include *.exe -ErrorAction SilentlyContinue -Force
     Invoke-psake .\build\sandbox.ps1 Clean
-    Invoke-psake .\src\psakefile.ps1 Clean
 }
