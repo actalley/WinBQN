@@ -40,9 +40,6 @@ dist/
 build/logonscript.ps1
 build/config.wsb
 
-src/cygwin/CBQN/
-src/cygwin/rlwrap/
-
 src/msys2/CBQN/
 src/msys2/rlwrap/
 
