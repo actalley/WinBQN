@@ -16,7 +16,7 @@ BuildSetup {
 Task default -depends Dist
 
 Task Dist `
-    -depends CheckClang, CheckGit `
+    -depends CheckEnvironment, Build `
     -description 'Builds a WinBQN distributon' `
 {
 
@@ -36,6 +36,39 @@ Task SandboxDist `
 
     Assert ( Test-Path -Path $distSuccessPath ) "`"$distSuccessPath`" does not exist, Dist must have failed in the sandbox!"
 }
+
+Task Build -depends GetCBQN {
+
+    # This is not necessarily how we want to build long term, this is just to get to a failing build so issues can be worked
+
+    Push-Location 'build\CBQN'
+
+    exec {
+
+        & git.exe submodule update --init build\bytecodeSubmodule
+    }
+
+    exec {
+
+        & clang.exe -std=gnu11 -Wall -Wno-unused-function -fms-extensions -ffp-contract=off -fno-math-errno -Wno-microsoft-anon-tag -Wno-bitwise-instead-of-logical -Wno-unknown-warning-option -DBYTECODE_DIR=build/bytecodeSubmodule -DSINGELI=0 -DFFI=1 -fvisibility=hidden -DCBQN_EXPORT -DUSE_REPLXX -Ireplxxdir/include -O3 -o bqn.exe src/opt/single.c -no-pie -lm -lffi -ldl -rdynamic
+    }
+
+    Pop-Location
+
+    Assert ( Test-Path -Path 'build\CBQN\BQN.exe' ) "BQN.exe does not exist!"
+}
+
+Task GetCBQN {
+
+    exec {
+
+        & git.exe submodule update --init build\CBQN
+    }
+
+    Assert ( Test-Path -Path 'build\CBQN\makefile' ) "CBQN makefile does not exist!"
+}
+
+Task CheckEnvironment -depends CheckClang, CheckGit
 
 Task CheckSandbox {
     
