@@ -50,7 +50,7 @@ Task Build -depends GetCBQN {
 
     exec {
 
-        & clang.exe -std=gnu11 -Wall -Wno-unused-function -fms-extensions -ffp-contract=off -fno-math-errno -Wno-microsoft-anon-tag -Wno-bitwise-instead-of-logical -Wno-unknown-warning-option -DBYTECODE_DIR=build/bytecodeSubmodule -DSINGELI=0 -DFFI=1 -fvisibility=hidden -DCBQN_EXPORT -DUSE_REPLXX -Ireplxxdir/include -O3 -o bqn.exe src/opt/single.c -no-pie -lm -lffi -ldl -rdynamic
+        & clang.exe -std=gnu11 -Wall -Wno-unused-function -fms-extensions -ffp-contract=off -fno-math-errno -Wno-microsoft-anon-tag -Wno-bitwise-instead-of-logical -Wno-unknown-warning-option -DBYTECODE_DIR=bytecodeSubmodule -DSINGELI=0 -DFFI=0 -fvisibility=hidden -DCBQN_EXPORT -DNO_MMAP -O3 -o bqn.exe src/opt/single.c -no-pie -lm -lpthread -rdynamic -v
     }
 
     Pop-Location
