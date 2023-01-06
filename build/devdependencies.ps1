@@ -18,10 +18,10 @@ properties {
 
     $setEnvContent = @"
 @echo off
-set llvm-mingw=$llvmMingwName
-set PATH=%~dp0tools\llvm-mingw\%llvm-mingw%\bin;%PATH%;
-set LIBRARY_PATH=%~dp0tools\llvm-mingw\%llvm-mingw%\lib\clang\15.0.0\lib\windows
-set CPATH=%~dp0tools\llvm-mingw\%llvm-mingw%\include;%~dp0tools\llvm-mingw\%llvm-mingw%\lib\clang\15.0.0\include
+set llvm-mingw=%~dp0tools\llvm-mingw\$llvmMingwName
+set PATH=%llvm-mingw%\bin;%PATH%;
+set LIBRARY_PATH=%llvm-mingw%\lib\clang\15.0.0\lib\windows
+set CPATH=%llvm-mingw%\include;%llvm-mingw%\lib\clang\15.0.0\include
 %SystemRoot%\system32\WindowsPowerShell\v1.0\powershell.exe -ExecutionPolicy Bypass -NoProfile %*
 exit /b %errorlevel%
 "@

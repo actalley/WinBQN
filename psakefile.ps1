@@ -3,6 +3,8 @@ properties {
 
     $sandboxNested = $SANDBOX
     $distSuccessPath = 'dist\success'
+
+    $distName = 'cbqn-llvm-mingw-x86_64'
 }
 
 BuildSetup {
@@ -18,9 +20,33 @@ Task default -depends Dist
 Task Dist `
     -depends CheckEnvironment, Build `
     -description 'Builds a WinBQN distributon' `
+    -requiredVariables distName `
 {
+    New-Item -Path dist\$distName -ItemType Directory | Out-Null
 
-    throw "Not implemented!"
+    $libwinpthread = "${env:llvm-mingw}\x86_64-w64-mingw32\bin\libwinpthread-1.dll"
+
+    Assert ( Test-Path -Path $libwinpthread ) "`"$libwinpthread`" does not exist!"
+
+    $distItems = @{
+        $libwinpthread                      = "dist\$distName\libwinpthread-1.dll"
+        'build\CBQN\BQN.exe'                = "dist\$distName\BQN.exe"
+        'build\CBQN\licenses\LICENSE-GPLv3' = "dist\$distName\LICENSE"
+    }
+    
+    $distItems.GetEnumerator() | ForEach-Object {
+
+        Copy-Item -Path $_.Name -Destination $_.Value 
+    }
+
+    $distItems.GetEnumerator() | ForEach-Object {
+
+        Assert ( Test-Path -Path $_.Value ) "`"$($_.Value)`" does not exist!"
+    }
+
+    Compress-Archive -Path "dist\$distName" -DestinationPath "dist\$distName.zip" -CompressionLevel Optimal
+
+    Assert ( Test-Path -Path "dist\$distName.zip" ) "`"dist\$distName.zip`" does not exist!"
 
     # if Dist is successful write dist\success file
     New-Item -Path $distSuccessPath -ItemType File -Force | Out-Null
@@ -50,7 +76,7 @@ Task Build -depends GetCBQN {
 
     exec {
 
-        & clang.exe -std=gnu11 -Wall -Wno-unused-function -fms-extensions -ffp-contract=off -fno-math-errno -Wno-microsoft-anon-tag -Wno-bitwise-instead-of-logical -Wno-unknown-warning-option -DBYTECODE_DIR=bytecodeSubmodule -DSINGELI=0 -DFFI=0 -fvisibility=hidden -DCBQN_EXPORT -DNO_MMAP -O3 -o bqn.exe src/opt/single.c -no-pie -lm -lpthread -rdynamic -v
+        & clang.exe -std=gnu11 -Wall -Wno-unused-function -fms-extensions -ffp-contract=off -fno-math-errno -Wno-microsoft-anon-tag -Wno-bitwise-instead-of-logical -Wno-unknown-warning-option -DBYTECODE_DIR=bytecodeSubmodule -DSINGELI=0 -DFFI=0 -fvisibility=hidden -DCBQN_EXPORT -DNO_MMAP -O3 -o BQN.exe src/opt/single.c -lm -lpthread
     }
 
     Pop-Location
