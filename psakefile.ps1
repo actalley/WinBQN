@@ -4,7 +4,7 @@ properties {
     $sandboxNested = $SANDBOX
     $distSuccessPath = 'dist\success'
 
-    $distName = 'cbqn-llvm-mingw-x86_64'
+    $distName = 'dzaima-cbqn-dev-llvm-mingw-x86_64'
 }
 
 BuildSetup {
@@ -29,9 +29,9 @@ Task Dist `
     Assert ( Test-Path -Path $libwinpthread ) "`"$libwinpthread`" does not exist!"
 
     $distItems = @{
-        $libwinpthread                      = "dist\$distName\libwinpthread-1.dll"
-        'build\CBQN\BQN.exe'                = "dist\$distName\BQN.exe"
-        'build\CBQN\licenses\LICENSE-GPLv3' = "dist\$distName\LICENSE"
+        $libwinpthread                                 = "dist\$distName\libwinpthread-1.dll"
+        'build\dzaima-CBQN-dev\BQN.exe'                = "dist\$distName\BQN.exe"
+        'build\dzaima-CBQN-dev\licenses\LICENSE-GPLv3' = "dist\$distName\LICENSE"
     }
     
     $distItems.GetEnumerator() | ForEach-Object {
@@ -67,7 +67,7 @@ Task Build -depends GetCBQN {
 
     # This is not necessarily how we want to build long term, this is just to get to a failing build so issues can be worked
 
-    Push-Location 'build\CBQN'
+    Push-Location 'build\dzaima-CBQN-dev'
 
     exec {
 
@@ -81,17 +81,17 @@ Task Build -depends GetCBQN {
 
     Pop-Location
 
-    Assert ( Test-Path -Path 'build\CBQN\BQN.exe' ) "BQN.exe does not exist!"
+    Assert ( Test-Path -Path 'build\dzaima-CBQN-dev\BQN.exe' ) "BQN.exe does not exist!"
 }
 
 Task GetCBQN {
 
     exec {
 
-        & git.exe submodule update --init build\CBQN
+        & git.exe submodule update --init build\dzaima-CBQN-dev
     }
 
-    Assert ( Test-Path -Path 'build\CBQN\makefile' ) "CBQN makefile does not exist!"
+    Assert ( Test-Path -Path 'build\dzaima-CBQN-dev\makefile' ) "CBQN makefile does not exist!"
 }
 
 Task CheckEnvironment -depends CheckClang, CheckGit
