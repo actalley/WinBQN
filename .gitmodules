@@ -1,8 +1,8 @@
-[submodule "build/CBQN"]
+[submodule "build/actalley-CBQN-windowsdev"]
 	path = build/actalley-CBQN-windowsdev
-	url = git@github.com:actalley/CBQN.git
+	url = https://github.com/actalley/CBQN.git
 	branch = windows
 [submodule "build/dzaima-CBQN-dev"]
 	path = build/dzaima-CBQN-dev
-	url = git@github.com:dzaima/CBQN.git
+	url = https://github.com/dzaima/CBQN.git
 	branch = develop
