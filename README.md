@@ -8,7 +8,7 @@ WinBQN is a work in progress attempt at providing an easy to install and configu
 
 Native builds currently error on repl input. It is possible to run `.bqn` files via `-f`, however they must have Unix line endings (for now). `UTF-8` console output has not been addressed. No `•FFI`, `•SH`, or `cbqn.dll` yet. Early days.
 
-Old MSYS2 and Cywin builds are still available in [Releases](https://github.com/actalley/WinBQN/releases), but there will be no new versions.
+Old MSYS2 and Cygwin builds are still available in [Releases](https://github.com/actalley/WinBQN/releases), but there will be no new versions.
 
 ## Short(ish) Term Goals
 - [x] Produce native builds with no Cygwin/MSYS2 dependencies
