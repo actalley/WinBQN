@@ -3,8 +3,6 @@ properties {
 
     $sandboxNested = $SANDBOX
     $distSuccessPath = 'dist\success'
-
-    $distName = 'dzaima-cbqn-dev-llvm-mingw-x86_64'
 }
 
 BuildSetup {
@@ -20,8 +18,15 @@ Task default -depends Dist
 Task Dist `
     -depends CheckEnvironment, Build `
     -description 'Builds a WinBQN distributon' `
-    -requiredVariables distName `
 {
+    $rev = & git.exe submodule status |
+        Select-String -Pattern '^(-|\s)([\d\w]{7})[\d\w]+\sbuild/dzaima-CBQN-dev\s.+$' |
+        ForEach-Object { $_.Matches.Groups[2].Value }
+
+    Assert ( $rev ) 'Unable to retrieve submodule revision'
+
+    $distName = "dzaima-cbqn-dev-$rev-llvm-mingw-x86_64"
+
     New-Item -Path dist\$distName -ItemType Directory | Out-Null
 
     $libwinpthread = "${env:llvm-mingw}\x86_64-w64-mingw32\bin\libwinpthread-1.dll"
@@ -31,12 +36,20 @@ Task Dist `
     $distItems = @{
         $libwinpthread                                 = "dist\$distName\libwinpthread-1.dll"
         'build\dzaima-CBQN-dev\BQN.exe'                = "dist\$distName\BQN.exe"
-        'build\dzaima-CBQN-dev\licenses\LICENSE-GPLv3' = "dist\$distName\LICENSE"
+        'build\dzaima-CBQN-dev\licenses\LICENSE-GPLv3' = "dist\$distName\licenses\CBQN_LICENSE"
+        "${env:llvm-mingw}\LICENSE.TXT"                = "dist\$distName\licenses\LLVM-MINGW_LICENSE"
     }
     
     $distItems.GetEnumerator() | ForEach-Object {
 
-        Copy-Item -Path $_.Name -Destination $_.Value 
+        $destFolder = $_.Value | Split-Path -Parent
+
+        if ( -not (Test-Path -Path $destFolder)  ) {
+
+            New-Item -Path $destFolder -ItemType Directory -Force | Out-Null
+        }
+
+        Copy-Item -Path $_.Name -Destination $_.Value -Force 
     }
 
     $distItems.GetEnumerator() | ForEach-Object {
@@ -81,7 +94,7 @@ Task Build -depends GetCBQN {
 
     Pop-Location
 
-    Assert ( Test-Path -Path 'build\dzaima-CBQN-dev\BQN.exe' ) "BQN.exe does not exist!"
+    Assert ( Test-Path -Path 'build\dzaima-CBQN-dev\BQN.exe' ) 'BQN.exe does not exist!'
 }
 
 Task GetCBQN {
@@ -91,7 +104,7 @@ Task GetCBQN {
         & git.exe submodule update --init build\dzaima-CBQN-dev
     }
 
-    Assert ( Test-Path -Path 'build\dzaima-CBQN-dev\makefile' ) "CBQN makefile does not exist!"
+    Assert ( Test-Path -Path 'build\dzaima-CBQN-dev\makefile' ) 'CBQN makefile does not exist!'
 }
 
 Task CheckEnvironment -depends CheckClang, CheckGit
@@ -111,11 +124,12 @@ Task CheckClang {
 
 Task CheckGit {
 
-    Assert ( [bool](Get-Command 'git.exe' -ErrorAction SilentlyContinue)  ) "Git must be in the Path!"
+    Assert ( [bool](Get-Command 'git.exe' -ErrorAction SilentlyContinue)  ) 'Git must be in the Path!'
 }
 
 Task Clean {
 
-    Remove-Item -Path .\build\* -Include *.exe -ErrorAction SilentlyContinue -Force
+    Remove-Item -Path .\dist\* -ErrorAction SilentlyContinue -Recurse -Force
+    Remove-Item -Path .\build\dzaima-CBQN-dev\* -Include *.exe, *.o, *.d, *dll -ErrorAction SilentlyContinue -Force
     Invoke-psake .\build\sandbox.ps1 Clean
 }
