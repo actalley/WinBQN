@@ -2,6 +2,7 @@
 properties {
 
     $sandboxNested = $SANDBOX
+    $dlfcn = 'build\dlfcn-win32-1.3.1-x86_64'
     $distSuccessPath = 'dist\success'
 }
 
@@ -37,8 +38,12 @@ Task DistDzaimaCBQNDevDll `
     $distItems = @{
         $libwinpthread                                 = "dist\$distName\libwinpthread-1.dll"
         'build\dzaima-CBQN-dev\cbqn.dll'               = "dist\$distName\cbqn.dll"
+        "${env:llvm-mingw}\python\bin\libffi-8.dll"    = "dist\$distname\libffi-8.dll"
+        "$dlfcn\dl.dll"                                = "dist\$distname\dl.dll"
         'build\dzaima-CBQN-dev\licenses\LICENSE-GPLv3' = "dist\$distName\licenses\CBQN_LICENSE"
         "${env:llvm-mingw}\LICENSE.TXT"                = "dist\$distName\licenses\LLVM-MINGW_LICENSE"
+        'build\licenses\DLFCN-WIN32_LICENSE'           = "dist\$distName\licenses\DLFCN-WIN32_LICENSE"
+        'build\licenses\LIBFFI_LICENSE'                = "dist\$distName\licenses\LIBFFI_LICENSE"
     }
 
     $distItems.GetEnumerator() | ForEach-Object {
@@ -73,9 +78,12 @@ Task DistDzaimaCBQNDevStaticDll `
     New-Item -Path dist\$distName -ItemType Directory | Out-Null
 
     $distItems = @{
-        'build\dzaima-CBQN-dev\cbqns.dll'               = "dist\$distName\cbqn.dll"
+        'build\dzaima-CBQN-dev\cbqns.dll'              = "dist\$distName\cbqn.dll"
+        "$dlfcn\dl.dll"                                = "dist\$distname\dl.dll"
         'build\dzaima-CBQN-dev\licenses\LICENSE-GPLv3' = "dist\$distName\licenses\CBQN_LICENSE"
         "${env:llvm-mingw}\LICENSE.TXT"                = "dist\$distName\licenses\LLVM-MINGW_LICENSE"
+        'build\licenses\DLFCN-WIN32_LICENSE'           = "dist\$distName\licenses\DLFCN-WIN32_LICENSE"
+        'build\licenses\LIBFFI_LICENSE'                = "dist\$distName\licenses\LIBFFI_LICENSE"
     }
 
     $distItems.GetEnumerator() | ForEach-Object {
@@ -117,8 +125,12 @@ Task DistDzaimaCBQNDev `
         $libwinpthread                                 = "dist\$distName\libwinpthread-1.dll"
         'build\dzaima-CBQN-dev\BQN.exe'                = "dist\$distName\BQN.exe"
         'build\dzaima-CBQN-dev\cbqn.dll'               = "dist\$distName\cbqn.dll"
+        "${env:llvm-mingw}\python\bin\libffi-8.dll"    = "dist\$distname\libffi-8.dll"
+        "$dlfcn\dl.dll"                                = "dist\$distname\dl.dll"
         'build\dzaima-CBQN-dev\licenses\LICENSE-GPLv3' = "dist\$distName\licenses\CBQN_LICENSE"
         "${env:llvm-mingw}\LICENSE.TXT"                = "dist\$distName\licenses\LLVM-MINGW_LICENSE"
+        'build\licenses\DLFCN-WIN32_LICENSE'           = "dist\$distName\licenses\DLFCN-WIN32_LICENSE"
+        'build\licenses\LIBFFI_LICENSE'                = "dist\$distName\licenses\LIBFFI_LICENSE"
     }
     
     $distItems.GetEnumerator() | ForEach-Object {
@@ -154,7 +166,7 @@ Task SandboxDist `
     Assert ( Test-Path -Path $distSuccessPath ) "`"$distSuccessPath`" does not exist, Dist must have failed in the sandbox!"
 }
 
-Task BuildDzaimaCBQNDev -depends GetDzaimaCBQNDev {
+Task BuildDzaimaCBQNDev -depends GetDzaimaCBQNDev, GetDlfcnWin32 {
 
     # This is not necessarily how we want to build long term, this is just to get to a failing build so issues can be worked
 
@@ -164,21 +176,21 @@ Task BuildDzaimaCBQNDev -depends GetDzaimaCBQNDev {
 
         & git.exe submodule update --init build\bytecodeSubmodule
     }
-
+    
     exec {
 
-        & clang.exe -std=gnu11 -Wall -Wno-unused-function -fms-extensions -ffp-contract=off -fno-math-errno -Wno-microsoft-anon-tag -Wno-bitwise-instead-of-logical -Wno-unknown-warning-option -DBYTECODE_DIR=bytecodeSubmodule -DSINGELI=0 -DFFI=0 -fvisibility=hidden -DCBQN_EXPORT -DNO_MMAP -O3 -o BQN.exe src/opt/single.c -lm -lpthread
+        & clang.exe -std=gnu11 -Wall -Wno-unused-function -fms-extensions -ffp-contract=off -fno-math-errno -Wno-microsoft-anon-tag -Wno-bitwise-instead-of-logical -Wno-unknown-warning-option "-I$PWD\.." "-I${env:llvm-mingw}\python\include" -DBYTECODE_DIR=bytecodeSubmodule -DSINGELI=0 -DFFI=2 -fvisibility=hidden -DCBQN_EXPORT -DNO_MMAP -O3 -o BQN.exe src/opt/single.c -lm -lpthread -l:dl.lib -lffi "-L${env:llvm-mingw}\python\lib" "-L$PWD\..\..\$dlfcn"
     }
 
 
     exec {
 
-        & clang.exe -std=gnu11 -Wall -Wno-unused-function -fms-extensions -ffp-contract=off -fno-math-errno -Wno-microsoft-anon-tag -Wno-bitwise-instead-of-logical -Wno-unknown-warning-option -DBYTECODE_DIR=bytecodeSubmodule -DCBQN_SHARED -DSINGELI=0 -DFFI=0 -fvisibility=hidden -DCBQN_EXPORT -DNO_MMAP -O3 -o cbqn.dll src/opt/single.c -lm -lpthread -shared
+        & clang.exe -std=gnu11 -Wall -Wno-unused-function -fms-extensions -ffp-contract=off -fno-math-errno -Wno-microsoft-anon-tag -Wno-bitwise-instead-of-logical -Wno-unknown-warning-option "-I$PWD\.." "-I${env:llvm-mingw}\python\include" -DBYTECODE_DIR=bytecodeSubmodule -DCBQN_SHARED -DSINGELI=0 -DFFI=2 -fvisibility=hidden -DCBQN_EXPORT -DNO_MMAP -O3 -o cbqn.dll src/opt/single.c -lm -lpthread -l:dl.lib -lffi -shared "-L${env:llvm-mingw}\python\lib" "-L$PWD\..\..\$dlfcn"
     }
 
     exec {
 
-        & clang.exe -std=gnu11 -Wall -Wno-unused-function -fms-extensions -ffp-contract=off -fno-math-errno -Wno-microsoft-anon-tag -Wno-bitwise-instead-of-logical -Wno-unknown-warning-option -DBYTECODE_DIR=bytecodeSubmodule -DCBQN_SHARED -DSINGELI=0 -DFFI=0 -fvisibility=hidden -DCBQN_EXPORT -DNO_MMAP -O3 -o cbqns.dll src/opt/single.c -lm -lpthread -shared -static
+        & clang.exe -std=gnu11 -Wall -Wno-unused-function -fms-extensions -ffp-contract=off -fno-math-errno -Wno-microsoft-anon-tag -Wno-bitwise-instead-of-logical -Wno-unknown-warning-option "-I$PWD\.." "-I${env:llvm-mingw}\python\include" -DBYTECODE_DIR=bytecodeSubmodule -DCBQN_SHARED -DSINGELI=0 -DFFI=2 -fvisibility=hidden -DCBQN_EXPORT -DNO_MMAP -O3 -o cbqns.dll src/opt/single.c -lm -lpthread -l:dl.lib -lffi -shared -static "-L${env:llvm-mingw}\python\lib" "-L$PWD\..\..\$dlfcn"
     }
 
     Pop-Location
@@ -194,6 +206,46 @@ Task GetDzaimaCBQNDev {
     }
 
     Assert ( Test-Path -Path 'build\dzaima-CBQN-dev\makefile' ) 'CBQN makefile does not exist!'
+}
+
+Task GetDlfcnWin32 `
+    -requiredVariables dlfcn `
+{
+
+    $dlfcnZip = "$dlfcn.zip"
+    $dlfcnZipHash = '326B2983DABAFA840CBA253458A5AC21790F6D50B99003F72C3DEF9AEB6F2470'
+    $dlfcnHeaderHash = '11AE64EE5746AF8EB1872C292222F865D0CA25FFF33868AACD6B5629C2C2B766'
+
+    if ( -not (Test-Path -Path $dlfcnZip) ) {
+
+        Invoke-WebRequest -Uri 'https://github.com/actalley/dlfcn-win32/releases/download/v1.3.1/dlfcn-win32-1.3.1-x86_64.zip' -OutFile $dlfcnZip -UseBasicParsing
+    }
+
+    Assert ( Test-Path -Path $dlfcnZip ) "`"$dlfcnZip`" does not exist!"
+
+    $zipHash = Get-fileHash -Path $dlfcnZip -Algorithm SHA256 | Select-Object -ExpandProperty Hash
+
+    Assert ( $zipHash -eq $dlfcnZipHash ) "`"$dlfcnZip`" has incorrect hash!"
+
+    if ( -not (Test-Path -Path $dlfcn) ) {
+
+        Add-Type -AssemblyName System.IO.Compression.FileSystem
+
+        [System.IO.Compression.ZipFile]::ExtractToDirectory("$PWD\$dlfcnZip", "$PWD\build")
+    }
+
+    Assert ( Test-Path -Path "$dlfcn\dl.dll" ) "`"$dlfcn\dl.dll`" does not exist!"
+
+    if ( -not (Test-Path -Path 'build\dlfcn.h') ) {
+
+        Invoke-WebRequest -Uri 'https://raw.githubusercontent.com/actalley/dlfcn-win32/master/src/dlfcn.h' -OutFile 'build\dlfcn.h' -UseBasicParsing
+    }
+
+    Assert ( Test-Path -Path 'build\dlfcn.h' ) '"build\dlfcn.h" does not exist!'
+
+    $headerHash = Get-fileHash -Path 'build\dlfcn.h' -Algorithm SHA256 | Select-Object -ExpandProperty Hash
+
+    Assert ( $headerHash -eq $dlfcnHeaderHash ) '"build\dlfcn.h" has incorrect hash!'
 }
 
 Task GetSubmoduleStatus {
